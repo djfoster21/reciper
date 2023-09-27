@@ -43,7 +43,7 @@ class Ingredient extends Model
         return $this->belongsTo(Account::class);
     }
 
-    public function price(): HasOne
+    public function cost(): HasOne
     {
         return $this->hasOne(IngredientCost::class);
     }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Cknow\Money\Casts\MoneyIntegerCast;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -17,10 +16,6 @@ class IngredientCost extends Model
         'price',
         'valid_from',
         'valid_to',
-    ];
-
-    protected $casts = [
-        'price' => MoneyIntegerCast::class,
     ];
 
     public function account(): BelongsTo

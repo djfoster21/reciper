@@ -66,7 +66,7 @@ class ImportCostsService implements ImportServiceInterface
                     'provider_id' => $provider->id,
                     'quantity' => $cost['cost_quantity'],
                     'measurement_type_id' => $measurementType->id,
-                    'price' => $cost['cost_price']->getAmount(),
+                    'price' => $cost['cost_price'],
                 ]);
                 $ingredientCosts = $ingredientCosts->push($ingredientCost);
             }

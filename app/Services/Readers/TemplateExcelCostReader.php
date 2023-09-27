@@ -38,7 +38,7 @@ class TemplateExcelCostReader implements ReaderInterface
                     'name' => $this->normalizeOutput($row[self::COLUMN_INGREDIENT_NAME]),
                     'cost_quantity' => $this->normalizeOutput($row[self::COLUMN_INGREDIENT_COST_QUANTITY]),
                     'cost_unit_type' => $this->normalizeOutput($row[self::COLUMN_INGREDIENT_COST_UNITY_TYPE]),
-                    'cost_price' => Money::parse($row[self::COLUMN_INGREDIENT_COST_PRICE]),
+                    'cost_price' => $row[self::COLUMN_INGREDIENT_COST_PRICE],
                     'cost_provider' => $this->normalizeOutput($row[self::COLUMN_INGREDIENT_COST_PROVIDER]),
                 ]));
             }

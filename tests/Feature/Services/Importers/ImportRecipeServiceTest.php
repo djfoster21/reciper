@@ -3,6 +3,7 @@
 use App\Models\Account;
 use App\Models\User;
 use App\Services\Importers\ImportRecipeService;
+use App\Services\Readers\TemplateExcelRecipeReader;
 use Illuminate\Support\Collection;
 
 use function Pest\Laravel\actingAs;
@@ -14,7 +15,7 @@ it('Imports recipes', function (Collection $readRecipes) {
         'account_id' => $account->id,
     ]);
     actingAs($user);
-    $recipeTemplateExcelReader = Mockery::mock('overload:App\Services\Readers\RecipeTemplateExcelReader');
+    $recipeTemplateExcelReader = Mockery::mock('overload:'.TemplateExcelRecipeReader::class);
     $recipeTemplateExcelReader->shouldReceive('handle')->once()->andReturn($readRecipes);
 
     $result = (new ImportRecipeService())->handle('file', $account);

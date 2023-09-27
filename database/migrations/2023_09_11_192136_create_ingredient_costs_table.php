@@ -29,7 +29,7 @@ return new class extends Migration
             $table->foreignIdFor(MeasurementType::class);
             $table->foreignIdFor(Provider::class);
             $table->integer('quantity');
-            $table->integer('price');
+            $table->decimal('price', 14, 6, true);
             $table->date('valid_from')->nullable();
             $table->date('valid_to')->nullable();
             $table->timestamps();

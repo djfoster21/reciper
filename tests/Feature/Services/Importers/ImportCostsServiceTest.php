@@ -3,7 +3,9 @@
 use App\Models\Account;
 use App\Models\User;
 use App\Services\Importers\ImportCostsService;
+use App\Services\Readers\TemplateExcelCostReader;
 use Illuminate\Support\Collection;
+
 use function Pest\Laravel\actingAs;
 use function PHPUnit\Framework\assertTrue;
 
@@ -13,7 +15,7 @@ it('Imports costs', function (Collection $readCosts) {
         'account_id' => $account->id,
     ]);
     actingAs($user);
-    $costTemplateExcelReader = Mockery::mock('overload:App\Services\Readers\CostsTemplateExcelReader');
+    $costTemplateExcelReader = Mockery::mock('overload:'.TemplateExcelCostReader::class);
     $costTemplateExcelReader->shouldReceive('handle')->once()->andReturn($readCosts);
 
     $result = (new ImportCostsService())->handle('file', $account);
