@@ -12,7 +12,7 @@ class RecipePolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -20,7 +20,7 @@ class RecipePolicy
      */
     public function view(User $user, Recipe $recipe): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -28,7 +28,7 @@ class RecipePolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -36,7 +36,7 @@ class RecipePolicy
      */
     public function update(User $user, Recipe $recipe): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -44,7 +44,7 @@ class RecipePolicy
      */
     public function delete(User $user, Recipe $recipe): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -52,7 +52,7 @@ class RecipePolicy
      */
     public function restore(User $user, Recipe $recipe): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -60,6 +60,6 @@ class RecipePolicy
      */
     public function forceDelete(User $user, Recipe $recipe): bool
     {
-        //
+        return false;
     }
 }
