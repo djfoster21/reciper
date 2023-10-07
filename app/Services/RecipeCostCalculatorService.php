@@ -2,32 +2,47 @@
 
 namespace App\Services;
 
+use App\Exceptions\NoCostException;
 use App\Models\Recipe;
 use App\Models\RecipeIngredient;
-use Cknow\Money\Money;
+use Brick\Money\Money;
+use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class RecipeCostCalculatorService
 {
+    public const DEFAULT_WASTE_COST_MULTIPLIER = 1.2;
+
+    public const DEFAULT_SALE_VALUE_MULTIPLIER = 2;
+
     public function getAllCosts(): Collection
     {
         return Recipe::all()->map(function (Recipe $recipe) {
-
+            //dd($recipe->ingredients->toArray());
             try {
                 $result = $this->getCostByRecipe($recipe);
-                $recipeCost = $result['totalCost'] * 1.2;
-                $ingredientsCosts = $result['ingredientCosts'];
-                $unitCost = $recipeCost / $recipe->yield;
+                /** @var Money $recipeCost */
+                $recipeCost = $result['totalCost']
+                    ->multipliedBy(self::DEFAULT_WASTE_COST_MULTIPLIER);
+                $ingredientsCosts = $result['ingredients'];
+                $unitCost = $recipeCost->dividedBy($recipe->yield);
 
                 return [
                     'recipe' => $recipe->name,
-                    'totalCost' => Money::EUR($recipeCost)->format(),
-                    'unitCost' => Money::EUR($unitCost)->format(),
-                    'salePrice' => Money::EUR($unitCost * 2),
+                    'totalCost' => $recipeCost,
+                    'unitCost' => $unitCost,
+                    'salePrice' => $unitCost->multipliedBy(self::DEFAULT_SALE_VALUE_MULTIPLIER),
                     'yield' => $recipe->yield,
                     'ingredientCosts' => $ingredientsCosts,
+                    'error' => null,
                 ];
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
+                Log::error('Error calculating cost', [
+                    'recipe' => $recipe->name,
+                    'exception' => $exception->getMessage(),
+                ]);
+
                 return null;
             }
         })->filter()->values();
@@ -35,27 +50,31 @@ class RecipeCostCalculatorService
 
     public function getCostByRecipe(Recipe $recipe): array
     {
-        $totalCost = 0;
+        $totalCost = Money::of(0, 'EUR')->toRational();
         $ingredientCosts = $recipe
             ->ingredients
             ->map(function (RecipeIngredient $recipeIngredient) use (&$totalCost) {
                 $ingredient = $recipeIngredient->ingredient;
                 if ($ingredient->cost === null) {
-                    throw new \Exception('Ingredient has no cost');
+                    Log::error('Ingredient has no cost', [
+                        'ingredient' => $ingredient->name,
+                    ]);
+                    throw new NoCostException('Ingredient has no cost');
                 }
-                $recipeIngredient->quantity;
-                if ($ingredient->cost->quantity !== 0) {
-                    $costPerUnit = $ingredient->cost->price / $ingredient->cost->quantity;
-                    $cost = $costPerUnit * $recipeIngredient->quantity;
 
-                    $totalCost += $cost;
+                if ($ingredient->cost->quantity !== 0) {
+                    $costPerUnit = $ingredient->cost->price->toRational()->dividedBy($ingredient->cost->quantity);
+                    $cost = $costPerUnit->multipliedBy($recipeIngredient->quantity);
+                    //dd($cost, $ingredient->cost->price->getAmount());
+                    $totalCost = $totalCost->plus($cost);
+
                     //dd($ingredient->name, $cost, $costPerUnit);
                     return [
                         'ingredient' => $ingredient->name,
-                        'quantity' => $recipeIngredient->quantity,
+                        'amount' => $recipeIngredient->quantity,
                         'unit' => $ingredient->measurementType->name,
-                        'cost' => Money::EUR($cost)->format(),
-                        'costPerUnit' => Money::EUR($costPerUnit)->format(),
+                        'cost' => $cost,
+                        'costPerUnit' => $costPerUnit,
                     ];
 
                 }
@@ -63,24 +82,9 @@ class RecipeCostCalculatorService
                 return null;
 
             })->filter()->values();
-        /*        $cost = $recipe->ingredients->reduce(function (Money $carry, RecipeIngredient $recipeIngredient) {
-                    $ingredient = $recipeIngredient->ingredient;
-                    if ($ingredient->cost === null) {
-                        throw new \Exception('Ingredient has no cost');
-                    }
-                    $recipeIngredient->quantity;
-                    if ($ingredient->cost->quantity !== 0) {
-                        $costPerUnit = $ingredient->cost->price->divide($ingredient->cost->quantity);
-
-                        return $carry->add($costPerUnit->multiply($recipeIngredient->quantity));
-                    }
-
-                    return $carry;
-
-                }, Money::EUR(0));*/
 
         return [
-            'ingredientCosts' => $ingredientCosts,
+            'ingredients' => $ingredientCosts,
             'totalCost' => $totalCost,
         ];
     }
