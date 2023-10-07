@@ -15,7 +15,10 @@ class RecipeController extends Controller
      */
     public function index()
     {
-        return new JsonResponse(Recipe::with(['ingredients', 'ingredients.ingredient.measurementType'])->get());
+        return new JsonResponse(Recipe::with([
+            'ingredients',
+            'ingredients.ingredient.measurementType',
+        ])->get());
     }
 
     /**
@@ -31,7 +34,7 @@ class RecipeController extends Controller
      */
     public function show(Recipe $recipe)
     {
-        //
+        //123
     }
 
     /**

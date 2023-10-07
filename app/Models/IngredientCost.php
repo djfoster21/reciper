@@ -2,9 +2,15 @@
 
 namespace App\Models;
 
+use Brick\Money\Context\AutoContext;
+use Brick\Money\Money;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property Money $price
+ */
 class IngredientCost extends Model
 {
     protected $fillable = [
@@ -17,6 +23,19 @@ class IngredientCost extends Model
         'valid_from',
         'valid_to',
     ];
+
+    protected array $dates = [
+        'valid_from',
+        'valid_to',
+    ];
+
+    public function price(): Attribute
+    {
+        return Attribute::make(
+            get: static fn ($value) => Money::of($value, 'EUR', new AutoContext()),
+            set: static fn ($value) => (string) $value->getAmount(),
+        );
+    }
 
     public function account(): BelongsTo
     {
