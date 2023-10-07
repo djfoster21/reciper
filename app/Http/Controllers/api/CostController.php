@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CalculatedRecipeResource;
 use App\Services\RecipeCostCalculatorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class CostController extends Controller
         $recipes = $this->calculatorService->getAllCosts();
 
         return response()->json([
-            'recipes' => $recipes,
+            'recipes' => CalculatedRecipeResource::collection($recipes),
         ]);
     }
 }
