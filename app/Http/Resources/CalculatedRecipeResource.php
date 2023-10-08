@@ -24,7 +24,7 @@ class CalculatedRecipeResource extends JsonResource
             'yield' => $this['yield'],
             'ingredients' => CalculatedRecipeIngredientResource::collection($this['ingredientCosts']),
 
-            'oldValues' => parent::toArray($request),
+            //'oldValues' => parent::toArray($request),
         ];
     }
 }
