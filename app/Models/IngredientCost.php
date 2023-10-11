@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasAccount;
 use Brick\Money\Context\AutoContext;
 use Brick\Money\Money;
+use Brick\Money\RationalMoney;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class IngredientCost extends Model
 {
+    use HasAccount;
+
     protected $fillable = [
         'account_id',
         'ingredient_id',
@@ -37,11 +41,6 @@ class IngredientCost extends Model
         );
     }
 
-    public function account(): BelongsTo
-    {
-        return $this->belongsTo(Account::class);
-    }
-
     public function ingredient(): BelongsTo
     {
         return $this->belongsTo(Ingredient::class);
@@ -55,5 +54,14 @@ class IngredientCost extends Model
     public function provider(): BelongsTo
     {
         return $this->belongsTo(Provider::class);
+    }
+
+    public function getPricePerUnitAttribute(): RationalMoney
+    {
+        if ($this->quantity === 0) {
+            return $this->price->toRational();
+        }
+
+        return $this->price->toRational()->dividedBy($this->quantity);
     }
 }

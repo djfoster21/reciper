@@ -20,7 +20,7 @@ class CalculatedRecipeIngredientResource extends JsonResource
             'amount' => $this['amount'],
             'unit' => $this['unit'],
             'cost' => PriceService::toString($this['cost']),
-            'unitCost' => PriceService::toString($this['unitCost']),
+            'unitCost' => PriceService::toString($this['unitCost'], 4),
         ];
 
         return parent::toArray($request);
