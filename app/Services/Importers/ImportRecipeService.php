@@ -38,7 +38,9 @@ class ImportRecipeService implements ImportServiceInterface
             &$measurementTypes
         ) {
             $currentRecipe = $recipes->firstWhere('name', $readRecipe->get('name'));
-            if (! $currentRecipe) {
+            if ($currentRecipe) {
+                $currentRecipe->ingredients()->detach();
+            } else {
                 $currentRecipe = Recipe::create([
                     'name' => $readRecipe->get('name'),
                     'yield' => $readRecipe->get('yield'),
