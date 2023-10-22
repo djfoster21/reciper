@@ -13,7 +13,7 @@ class RecipeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): JsonResponse
     {
         return new JsonResponse(Recipe::with([
             'ingredients',

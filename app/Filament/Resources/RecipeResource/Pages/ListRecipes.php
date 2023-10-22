@@ -6,6 +6,7 @@ use App\Filament\Resources\RecipeResource;
 use App\Services\Importers\ImportRecipeService;
 use Filament\Actions;
 use Filament\Forms\Components\FileUpload;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
@@ -31,7 +32,17 @@ class ListRecipes extends ListRecords
                 ->action(function (array $data, ImportRecipeService $importRecipeService) {
                     /** @var TemporaryUploadedFile $file */
                     $file = $data['file'];
-                    $importRecipeService->handle($file->getRealPath(), auth()->user()->account);
+
+                    $result = $importRecipeService->handle($file->getRealPath(), auth()->user()->account);
+                    $notificationBody = 'Recipes: '.
+                        $result->get('recipe')['created'].' created | '.
+                        $result->get('recipe')['updated'].' updated';
+
+                    Notification::make()
+                        ->success()
+                        ->title('Recipes imported')
+                        ->body($notificationBody)
+                        ->send();
                 }),
             Actions\CreateAction::make()
                 ->label('Add Recipe')
