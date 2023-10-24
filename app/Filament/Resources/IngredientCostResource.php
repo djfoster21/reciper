@@ -24,9 +24,6 @@ class IngredientCostResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('account_id')
-                    ->relationship('account', 'name')
-                    ->required(),
                 Forms\Components\Select::make('ingredient_id')
                     ->relationship('ingredient', 'name')
                     ->required(),
