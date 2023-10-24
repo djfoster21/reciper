@@ -1,0 +1,10 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@config './tailwind.config.js';
+
+.fi-btn {
+    @apply rounded-none;
+}
+.fi-ta-ctn {
+    @apply rounded-none;
+}

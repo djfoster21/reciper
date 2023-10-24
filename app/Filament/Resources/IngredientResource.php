@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\IngredientResource\Pages;
 use App\Models\Ingredient;
+use App\Services\PriceService;
 use Filament\Forms;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,8 +30,30 @@ class IngredientResource extends Resource
                 Forms\Components\Select::make('measurement_type_id')
                     ->relationship('measurementType', 'name')
                     ->required(),
-                Forms\Components\TextInput::make('ingredient_category_id')
-                    ->numeric(),
+                Forms\Components\Select::make('ingredient_category_id')
+                    ->relationship('category', 'name'),
+                Repeater::make('costs')
+                    ->label('Costs')
+                    ->addActionLabel('Add Cost')
+                    ->relationship('costs')
+                    ->columnSpanFull()
+                    ->schema([
+                        Forms\Components\Select::make('measurement_type_id')
+                            ->relationship('measurementType', 'name')
+                            ->required(),
+                        Forms\Components\Select::make('provider_id')
+                            ->relationship('provider', 'name')
+                            ->createOptionForm(null)
+                            ->required(),
+                        Forms\Components\TextInput::make('quantity')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('price')
+                            ->required()
+                            ->prefix('EUR'),
+                        Forms\Components\DatePicker::make('valid_from'),
+                        Forms\Components\DatePicker::make('valid_to'),
+                    ]),
             ]);
     }
 
@@ -42,6 +66,12 @@ class IngredientResource extends Resource
                 Tables\Columns\TextColumn::make('measurementType.name')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('cost.pricePerUnit')
+                    ->label('Cost per unit')
+                    ->state(fn (Ingredient $ingredient) => PriceService::toFloat($ingredient->cost?->price_per_unit))
+                    ->money('EUR'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -50,8 +80,6 @@ class IngredientResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('category.name')
-                    ->sortable(),
             ])
             ->filters([
                 //

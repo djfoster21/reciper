@@ -41,9 +41,7 @@ class RecipeResource extends Resource
                 Select::make('category_id')
                     ->relationship('category', 'name')
                     ->required()
-                    ->createOptionForm(function (Form $form) {
-                        return RecipeCategoryResource::form($form);
-                    }),
+                    ->createOptionForm(fn (Form $form) => RecipeCategoryResource::form($form)),
                 Textarea::make('notes'),
             ]);
     }

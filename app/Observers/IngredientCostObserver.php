@@ -12,6 +12,17 @@ class IngredientCostObserver
     public function creating(IngredientCost $ingredientCost): void
     {
         $ingredientCost->account()->associate(auth()->user()->account);
+
+        IngredientCost::where('ingredient_id', $ingredientCost->ingredient_id)
+            ->whereNull('valid_to')
+            ->each(function (IngredientCost $ingredientCost) {
+                $ingredientCost->valid_to = now();
+                $ingredientCost->save();
+
+                return $ingredientCost;
+            });
+        $ingredientCost->valid_from = now();
+        $ingredientCost->valid_to = null;
     }
 
     /**

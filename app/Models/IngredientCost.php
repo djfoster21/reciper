@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CurrentScope;
 use App\Models\Traits\HasAccount;
 use Brick\Money\Context\AutoContext;
 use Brick\Money\Money;
 use Brick\Money\RationalMoney;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +34,11 @@ class IngredientCost extends Model
         'valid_from',
         'valid_to',
     ];
+
+    public function scopeCurrent(Builder $query): void
+    {
+        (new CurrentScope())->apply($query, $this);
+    }
 
     public function price(): Attribute
     {

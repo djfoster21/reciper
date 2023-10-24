@@ -32,7 +32,7 @@ class RecipeIngredientRelationManager extends RelationManager
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->suffix($form->getRecord()->ingredient->measurementType->name),
+                    ->suffix($form->getRecord()?->ingredient?->measurementType->name),
             ]);
     }
 

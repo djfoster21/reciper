@@ -8,6 +8,8 @@ use App\Models\IngredientCost;
 use App\Models\MeasurementType;
 use App\Models\Provider;
 use App\Services\Readers\TemplateExcelCostReader;
+use Brick\Money\Context\AutoContext;
+use Brick\Money\Money;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -66,7 +68,7 @@ class ImportCostsService implements ImportServiceInterface
                     'provider_id' => $provider->id,
                     'quantity' => $cost['cost_quantity'],
                     'measurement_type_id' => $measurementType->id,
-                    'price' => $cost['cost_price'],
+                    'price' => Money::of($cost['cost_price'], 'EUR', new AutoContext()),
                 ]);
                 $ingredientCosts = $ingredientCosts->push($ingredientCost);
             }
