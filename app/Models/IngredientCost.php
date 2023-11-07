@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Scopes\CurrentScope;
 use App\Models\Traits\HasAccount;
+use App\Services\PriceService;
 use Brick\Money\Context\AutoContext;
 use Brick\Money\Money;
 use Brick\Money\RationalMoney;
@@ -44,7 +45,13 @@ class IngredientCost extends Model
     {
         return Attribute::make(
             get: static fn ($value) => Money::of($value, 'EUR', new AutoContext()),
-            set: static fn ($value) => (string) $value->getAmount(),
+            set: static function ($value) {
+                if (is_string($value)) {
+                    return $value;
+                }
+
+                return (string) PriceService::toFloat($value);
+            },
         );
     }
 
