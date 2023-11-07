@@ -6,6 +6,7 @@ use App\Filament\Resources\RecipeResource\Pages;
 use App\Filament\Resources\RecipeResource\RelationManagers\RecipeIngredientRelationManager;
 use App\Models\Recipe;
 use App\Services\PriceService;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -42,22 +43,15 @@ class RecipeResource extends Resource
                     ->relationship('category', 'name')
                     ->required()
                     ->createOptionForm(fn (Form $form) => RecipeCategoryResource::form($form)),
-                Textarea::make('notes'),
+                RichEditor::make('notes')
+                    ->columnSpanFull()
+                ,
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-/*            ->modifyQueryUsing(function (Builder $query) {
-                return $query->with([
-                    'category',
-                    'ingredients',
-                    'ingredients.ingredient',
-                    'ingredients.ingredient.cost',
-                    'ingredients.ingredient.measurementType',
-                ]);
-            })*/
             ->inverseRelationship('ingredients')
             ->columns([
                 TextColumn::make('name')

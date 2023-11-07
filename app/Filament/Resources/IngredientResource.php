@@ -29,6 +29,7 @@ class IngredientResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('measurement_type_id')
                     ->relationship('measurementType', 'name')
+                    ->searchable()
                     ->required(),
                 Forms\Components\Select::make('ingredient_category_id')
                     ->relationship('category', 'name'),
