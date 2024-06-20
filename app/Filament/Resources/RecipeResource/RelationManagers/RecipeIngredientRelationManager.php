@@ -25,7 +25,7 @@ class RecipeIngredientRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Select::make('ingredient')
+                Select::make('ingredient_id')
                     ->relationship('ingredient', 'name')
                     ->required(),
                 TextInput::make('quantity')
